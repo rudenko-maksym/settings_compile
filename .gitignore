@@ -1,1 +1,4 @@
 vendor
+vbin
+.phpcomplete_extended
+Session.vim
