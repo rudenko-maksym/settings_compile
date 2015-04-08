@@ -2,9 +2,9 @@
 
 namespace Drupal\Settings;
 
-use Symfony\Component\Yaml\Parser;
-use Symfony\Component\Config\Definition\Processor;
-use Drupal\Settings\Schema;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Config\FileLocator;
 
 class Compiler
 {
@@ -24,28 +24,19 @@ class Compiler
 
     function __construct($configFile)
     {
-        $yaml = new Parser();
-        $config = $yaml->parse(file_get_contents($configFile));
-        $processor = new Processor();
-        $this->config = $processor->processConfiguration(new Schema(), $config);
-    }
-
-    function settingsPreprocess()
-    {
-        if (isset($this->config['settings']['db_url'])) {
-            $db = &$this->config['settings']['databases']['default']['default'];
-            $dbURL = parse_url($this->config['settings']['db_url']);
-            $db['driver']   = $dbURL['scheme'];
-            $db['username'] = $dbURL['user'];
-            $db['password'] = $dbURL['pass'];
-            $db['database'] = trim($dbURL['path'], '/');
-            $db['host']     = $dbURL['host'];
-        }
+        $container = new ContainerBuilder();
+        $container->registerExtension(new DrupalExtension);
+        $loader = new YamlFileLoader(
+            $container,
+            new FileLocator(dirname($configFile))
+        );
+        $loader->load(basename($configFile));
+        $container->compile();
+        $this->config = $container->getParameter('drupal_settings');
     }
 
     function write($path)
     {
-        $this->settingsPreprocess();
         $settings = "<?php\n";
         foreach ($this->config['settings'] as $settingName => $settingValue) {
           $setting = "\$$settingName=";

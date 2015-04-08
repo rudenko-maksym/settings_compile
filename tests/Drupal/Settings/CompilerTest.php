@@ -149,4 +149,61 @@ EOF
         $this->assertSettingsVarEquals('anotherKey', 44);
         $this->assertSettingsVarEquals('animal', 'elephant');
     }
+
+    public function testImports()
+    {
+        $configPath = $this->createConfigFile('config.yml',
+<<<EOF
+drupal:
+  settings:
+    databases:
+      default:
+        default:
+          database: drupal_db
+          username: drupal_user
+          password: drupal_pass
+          driver: mysql
+    conf:
+      project_dir: %PROJECT_DIR
+EOF
+        );
+
+        $configDevPath = $this->createConfigFile('config_dev.yml',
+<<<EOF
+imports:
+  - { resource: config.yml }
+
+drupal:
+  settings:
+    databases:
+      default:
+        default:
+          database: drupal_test_db
+          username: drupal_user
+          password: drupal_pass
+          driver: mysql
+    conf:
+      project_dir: %PROJECT_DIR
+      debug: true
+EOF
+        );
+
+        $this->compileConfig($configDevPath);
+
+        $this->assertSettingsVarEquals('databases', array(
+            'default' => array(
+                'default' => array(
+                    'database' => 'drupal_test_db',
+                    'username' => 'drupal_user',
+                    'password' => 'drupal_pass',
+                    'driver' => 'mysql',
+                )
+            )
+        ));
+
+        $this->assertSettingsVarEquals('conf', array(
+            'project_dir' => PROJECT_DIR,
+            'debug' => true
+        ));
+    }
 }

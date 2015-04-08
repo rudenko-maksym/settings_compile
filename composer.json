@@ -8,7 +8,8 @@
     ],
     "require": {
         "symfony/config": "*",
-        "symfony/yaml": "*"
+        "symfony/yaml": "*",
+        "symfony/dependency-injection": "~2.6"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
