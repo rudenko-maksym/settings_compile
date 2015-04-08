@@ -1,6 +1,10 @@
 {
-    "name": "winmillwill/settings_compile",
+    "name": "drupal/settings_compile",
     "authors": [
+        {
+            "name": "Maksym Rudenko",
+            "email": "rudenkoinscience@gmail.com"
+        },
         {
             "name": "Will Milton",
             "email": "wa.milton@gmail.com"
