@@ -23,5 +23,13 @@
             "Drupal\\Settings\\": "src/"
         }
     },
-    "bin": ["bin/settings_compile"]
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "bin": ["bin/settings_compile"],
+    "config": {
+        "bin-dir": "vbin"
+    }
 }
