@@ -206,4 +206,50 @@ EOF
             'debug' => true
         ));
     }
+
+    public function testThatCompilesWithParameters()
+    {
+        $this->createConfigFile('parameters.yml', <<<EOL
+parameters:
+  db_driver: mysql
+EOL
+        );
+
+        $configPath = $this->createConfigFile('config.yml', <<<EOL
+imports:
+  - { resource: parameters.yml }
+
+drupal:
+  settings:
+    databases:
+      default:
+        default:
+          database: drupal_test_db
+          username: drupal_user
+          password: drupal_pass
+          driver: %db_driver%
+    conf:
+      project_dir: %PROJECT_DIR
+      debug: true
+EOL
+        );
+
+        $this->compileConfig($configPath);
+
+        $this->assertSettingsVarEquals('databases', array(
+            'default' => array(
+                'default' => array(
+                    'database' => 'drupal_test_db',
+                    'username' => 'drupal_user',
+                    'password' => 'drupal_pass',
+                    'driver' => 'mysql',
+                )
+            )
+        ));
+
+        $this->assertSettingsVarEquals('conf', array(
+            'project_dir' => PROJECT_DIR,
+            'debug' => true
+        ));
+    }
 }
