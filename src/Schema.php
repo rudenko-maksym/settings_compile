@@ -4,19 +4,20 @@ namespace Drupal\Settings;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 
 class Schema implements ConfigurationInterface
 {
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('drupal');
+        $rootNode = $treeBuilder->root('drupal', 'array', $this->createNodeBuilder());
         $rootNode->children()
             ->arrayNode('settings')
                 ->isRequired()
                 ->children()
                     ->variableNode('databases')->isRequired()->end()
-                    ->variableNode('conf')->end()
+                    ->node('conf', 'variableMergeable')->end()
                     ->scalarNode('cookie_domain')->end()
                     ->scalarNode('db_url')->end()
                     ->scalarNode('db_prefix')->end()
@@ -47,5 +48,16 @@ class Schema implements ConfigurationInterface
                 ->end()
             ->end();
         return $treeBuilder;
+    }
+
+    /**
+     * @return NodeBuilder The node builder aware of "variableMergeable" node definition
+     */
+    public function createNodeBuilder()
+    {
+        $builder = new NodeBuilder();
+
+        return $builder
+            ->setNodeClass('variableMergeable', __NAMESPACE__ . '\\Config\\Definition\\Builder\\VariableMergeableNodeDefinition');
     }
 }

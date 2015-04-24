@@ -165,6 +165,10 @@ drupal:
           driver: mysql
     conf:
       project_dir: %PROJECT_DIR
+      env:
+        ENV_1: value_1
+        ENV_2: value_2
+
 EOF
         );
 
@@ -183,8 +187,9 @@ drupal:
           password: drupal_pass
           driver: mysql
     conf:
-      project_dir: %PROJECT_DIR
       debug: true
+      env:
+        ENV_1: value_3
 EOF
         );
 
@@ -203,7 +208,11 @@ EOF
 
         $this->assertSettingsVarEquals('conf', array(
             'project_dir' => PROJECT_DIR,
-            'debug' => true
+            'debug' => true,
+            'env' => array(
+                'ENV_1' => 'value_3',
+                'ENV_2' => 'value_2'
+            )
         ));
     }
 
